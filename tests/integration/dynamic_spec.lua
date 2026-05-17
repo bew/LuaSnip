@@ -1,5 +1,5 @@
 local ls_helpers = require("helpers")
-local exec_lua, feed = ls_helpers.exec_lua, ls_helpers.feed
+local exec_lua, feed, assert = ls_helpers.exec_lua, ls_helpers.feed, ls_helpers.assert
 local Screen = require("test.functional.ui.screen")
 
 describe("DynamicNode", function()
@@ -402,7 +402,7 @@ describe("DynamicNode", function()
 	it(
 		"selected text is selected again after updating (when possible).",
 		function()
-			assert.are.same(
+			assert.eq(
 				{ "${1:${1:esdf}}$0" },
 				exec_lua([[
 			snip = s("trig", {
@@ -461,6 +461,4 @@ describe("DynamicNode", function()
   ]],
 		})
 	end)
-
-	it("")
 end)

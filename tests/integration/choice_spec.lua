@@ -1,6 +1,7 @@
 local ls_helpers = require("helpers")
 local exec_lua, feed = ls_helpers.exec_lua, ls_helpers.feed
 local Screen = require("test.functional.ui.screen")
+local assert = ls_helpers.assert
 
 describe("ChoiceNode", function()
 	local screen
@@ -31,7 +32,7 @@ describe("ChoiceNode", function()
 				})
 			})
 		]]
-		assert.are.same(
+		assert.eq(
 			exec_lua("return " .. snip .. ":get_static_text()"),
 			{ "a" }
 		)
@@ -68,21 +69,21 @@ describe("ChoiceNode", function()
 				})
 			})
 		]]
-		assert.are.same(
+		assert.eq(
 			exec_lua("return " .. snip .. ":get_static_text()"),
 			{ "a a" }
 		)
-		assert.are.same(
+		assert.eq(
 			exec_lua("return " .. snip .. ":get_docstring()"),
 			{ "${1:${${1:a} ${2:a}}}$0" }
 		)
 		exec_lua("ls.snip_expand(" .. snip .. ")")
 		-- next jump leads to t"a".
-		assert.are.same(
+		assert.eq(
 			exec_lua([[return ls.jump_destination(1).absolute_insert_position]]),
 			{ 1, 1, 2, 1 }
 		)
-		assert.are.same(exec_lua("return ls.get_current_choices()"), {
+		assert.eq(exec_lua("return ls.get_current_choices()"), {
 			"${${1:a} ${2:a}}",
 			"b",
 		})
@@ -106,7 +107,7 @@ describe("ChoiceNode", function()
 		})
 
 		-- back-jump leads to 1-node.
-		assert.are.same(
+		assert.eq(
 			exec_lua(
 				[[return ls.jump_destination(-1).absolute_insert_position]]
 			),
@@ -124,7 +125,7 @@ describe("ChoiceNode", function()
 		})
 
 		exec_lua("ls.change_choice(1)")
-		assert.are.same(
+		assert.eq(
 			exec_lua([[return ls.jump_destination(1).absolute_insert_position]]),
 			{ 1, 1, 2, 2 }
 		)
@@ -176,18 +177,18 @@ describe("ChoiceNode", function()
 				})
 			})
 		]]
-		assert.are.same(
+		assert.eq(
 			exec_lua("return " .. snip .. ":get_static_text()"),
 			{ "aa" }
 		)
-		assert.are.same(
+		assert.eq(
 			exec_lua("return " .. snip .. ":get_docstring()"),
 			{ "${1:a}${2:${${1:a}}}$0" }
 		)
 		exec_lua("ls.snip_expand(" .. snip .. ")")
 
 		-- next jump leads inside dynamicNode.
-		assert.are.same(
+		assert.eq(
 			exec_lua([[return ls.jump_destination(1).absolute_insert_position]]),
 			{ 2, 1, 0, 1 }
 		)
@@ -207,7 +208,7 @@ describe("ChoiceNode", function()
 			{0:~                                                 }|
 			{2:-- SELECT --}                                      |]],
 		})
-		assert.are.same(exec_lua("return ls.get_current_choices()"), {
+		assert.eq(exec_lua("return ls.get_current_choices()"), {
 			"${${1:b}}",
 			"none",
 		})
@@ -261,7 +262,7 @@ describe("ChoiceNode", function()
 			}))
 		]])
 
-		assert.are.same(exec_lua("return ls.get_current_choices()"), {
+		assert.eq(exec_lua("return ls.get_current_choices()"), {
 			"a",
 			"${c}",
 			"b",
@@ -310,7 +311,7 @@ describe("ChoiceNode", function()
 	end)
 
 	it("correctly gives current content of choices.", function()
-		assert.are.same(
+		assert.eq(
 			{ "${1:asdf}", "qwer" },
 			exec_lua([[
 			ls.snip_expand(s("trig", {
@@ -326,7 +327,7 @@ describe("ChoiceNode", function()
 	end)
 
 	it("correctly restores the generated node of a dynamicNode.", function()
-		assert.are.same(
+		assert.eq(
 			{ "${1:${${1:aaa}${2:${1:aaa}}}}$0" },
 			exec_lua([[
 			snip = s("trig", {
