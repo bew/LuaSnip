@@ -2054,8 +2054,12 @@ describe("session", function()
 
 			-- make sure the snippet-roots-list is still an array, and we did not
 			-- insert at 2 after the deletion of the first snippet.
-			assert.is_true(exec_lua("return ls.session.snippet_roots[1][1] ~= nil"))
-			assert.is_true(exec_lua("return ls.session.snippet_roots[1][2] == nil"))
+			assert.is_true(
+				exec_lua("return ls.session.snippet_roots[1][1] ~= nil")
+			)
+			assert.is_true(
+				exec_lua("return ls.session.snippet_roots[1][2] == nil")
+			)
 		end
 	)
 

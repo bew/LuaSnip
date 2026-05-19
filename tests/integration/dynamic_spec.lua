@@ -1,5 +1,6 @@
 local ls_helpers = require("helpers")
-local exec_lua, feed, assert = ls_helpers.exec_lua, ls_helpers.feed, ls_helpers.assert
+local exec_lua, feed, assert =
+	ls_helpers.exec_lua, ls_helpers.feed, ls_helpers.assert
 local Screen = require("test.functional.ui.screen")
 
 describe("DynamicNode", function()

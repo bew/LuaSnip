@@ -1,5 +1,6 @@
 local ls_helpers = require("helpers")
-local exec_lua, exec, assert = ls_helpers.exec_lua, ls_helpers.exec, ls_helpers.assert
+local exec_lua, exec, assert =
+	ls_helpers.exec_lua, ls_helpers.exec, ls_helpers.assert
 
 describe("luasnip.util.environ", function()
 	ls_helpers.clear()

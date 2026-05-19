@@ -32,10 +32,7 @@ describe("ChoiceNode", function()
 				})
 			})
 		]]
-		assert.eq(
-			exec_lua("return " .. snip .. ":get_static_text()"),
-			{ "a" }
-		)
+		assert.eq(exec_lua("return " .. snip .. ":get_static_text()"), { "a" })
 		exec_lua("ls.snip_expand(" .. snip .. ")")
 
 		screen:expect({
@@ -177,10 +174,7 @@ describe("ChoiceNode", function()
 				})
 			})
 		]]
-		assert.eq(
-			exec_lua("return " .. snip .. ":get_static_text()"),
-			{ "aa" }
-		)
+		assert.eq(exec_lua("return " .. snip .. ":get_static_text()"), { "aa" })
 		assert.eq(
 			exec_lua("return " .. snip .. ":get_docstring()"),
 			{ "${1:a}${2:${${1:a}}}$0" }

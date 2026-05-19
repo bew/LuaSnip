@@ -27,7 +27,7 @@ else
 	end
 	assert.has_error = function(fn)
 		local ok, _ = pcall(fn)
-		return (not ok)
+		return not ok
 	end
 	assert.is_true = test_assert.is_true
 	assert.is_false = test_assert.is_false
@@ -248,14 +248,8 @@ function M.session_setup_luasnip(opts)
 end
 
 function M.static_docstring_test(snip_str, static, docstring)
-	assert.eq(
-		static,
-		exec_lua("return " .. snip_str .. ":get_static_text()")
-	)
-	assert.eq(
-		docstring,
-		exec_lua("return " .. snip_str .. ":get_docstring()")
-	)
+	assert.eq(static, exec_lua("return " .. snip_str .. ":get_static_text()"))
+	assert.eq(docstring, exec_lua("return " .. snip_str .. ":get_docstring()"))
 end
 function M.lsp_static_test(snip_str, static)
 	assert.eq(
