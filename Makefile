@@ -4,8 +4,10 @@ NVIM_PATH=deps/nvim_multiversion
 # relative to ${NVIM_PATH} and relative to this makefile.
 NVIM_MASTER_PATH_REL=worktree_master
 NVIM_0.9_PATH_REL=worktree_0.9
+NVIM_0.12_PATH_REL=worktree_0.12
 NVIM_MASTER_PATH=${NVIM_PATH}/${NVIM_MASTER_PATH_REL}
 NVIM_0.9_PATH=${NVIM_PATH}/${NVIM_0.9_PATH_REL}
+NVIM_0.12_PATH=${NVIM_PATH}/${NVIM_0.12_PATH_REL}
 
 # directory as target.
 ${NVIM_PATH}:
@@ -13,6 +15,7 @@ ${NVIM_PATH}:
 # work).
 	git clone --bare --depth 1 https://github.com/neovim/neovim ${NVIM_PATH};
 	git -C ${NVIM_PATH} fetch --depth 1 origin tag v0.9.0;
+	git -C ${NVIM_PATH} fetch --depth 1 origin tag v0.12.0;
 # create one worktree for master, and one for 0.9.
 # The rationale behind this is that switching from 0.9 to master (and
 # vice-versa) requires a `make distclean`, and full clean build, which takes
@@ -21,6 +24,7 @@ ${NVIM_PATH}:
 # for master, and one for 0.9 which are used for the respective builds/tests.
 	git -C ${NVIM_PATH} worktree add ${NVIM_MASTER_PATH_REL} master;
 	git -C ${NVIM_PATH} worktree add ${NVIM_0.9_PATH_REL} v0.9.0;
+	git -C ${NVIM_PATH} worktree add ${NVIM_0.12_PATH_REL} v0.12.0;
 
 # |: don't update `nvim` if `${NVIM_PATH}` is changed.
 nvim: | ${NVIM_PATH}
@@ -125,6 +129,7 @@ uninstall_jsregexp:
 	rm -f "$(PROJECT_ROOT)/lua/luasnip-jsregexp.lua";
 
 TEST_09?=true
+TEST_012?=true
 TEST_MASTER?=true
 PREVENT_LUA_PATH_LEAK?=true
 # Expects to be run from repo-location (eg. via `make -C path/to/luasnip`).
@@ -133,6 +138,9 @@ test: nvim install_jsregexp
 # add our helper-functions to lpath.
 # exit as soon as an error occurs.
 # For some Reason, on 0.9.0, `make functionaltest` has to be preceded by a regular make for doc to build.
+# In the TEST_012 branch, the TEST_FILE has to be set to a relative path
+# because it resolves absolute paths incorrectly/not how we want here.
+# So, set it as the tests expect in a subshell.
 	if ${PREVENT_LUA_PATH_LEAK}; then unset LUA_PATH LUA_CPATH; fi; \
 	export LUASNIP_SOURCE=$(PROJECT_ROOT); \
 	export JSREGEXP010_ABS_PATH=$(JSREGEXP010_PATH); \
@@ -143,11 +151,13 @@ test: nvim install_jsregexp
 	export LUASNIP_OVERRIDE_LOGPATH=$(PROJECT_ROOT); \
 	set -e; \
 	if ${TEST_09}; then "$(MAKE)" -C ${NVIM_0.9_PATH} -j; "$(MAKE)" -C ${NVIM_0.9_PATH} functionaltest -j; fi; \
+	if ${TEST_012}; then "$(MAKE)" -C ${NVIM_0.12_PATH} -j; (TEST_FILE=../../$(shell realpath --relative-to=${NVIM_0.12_PATH} ${TEST_FILE}) "$(MAKE)" -C ${NVIM_0.12_PATH} functionaltest -j); fi; \
 	if ${TEST_MASTER}; then unset BUSTED_ARGS; "$(MAKE)" -C ${NVIM_MASTER_PATH} -j; ./tests/test_master.sh; fi;
 
 test_nix: nvim install_jsregexp
 	set -e; \
 	if ${TEST_09}; then nix develop .#test_nvim_09 -c make test; fi; \
+	if ${TEST_012}; then nix develop .#test_nvim_012 -c make test; fi; \
 	if ${TEST_MASTER}; then nix develop .#test_nvim_master -c make test; fi;
 
 spellcheck:

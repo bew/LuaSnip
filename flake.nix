@@ -70,6 +70,7 @@
         # override default tree-sitter, it has the wrong version (0.20.7 vs required 0.20.8).
         test_nvim_09 = default_09_devshell.overrideAttrs(attrs: {
           TEST_09=true_bin;
+          TEST_012=false_bin;
           TEST_MASTER=false_bin;
 
           # when using bundled dependencies, there are issues with luarocks :/
@@ -93,8 +94,28 @@
           shellHook = "";
         });
 
+        test_nvim_012 = nvim_master.outputs.devShells.${pkgs.system}.default.overrideAttrs(attrs: {
+          TEST_09=false_bin;
+          TEST_012=true_bin;
+          TEST_MASTER=true_bin;
+
+          # same reasoning as in nvim_09
+          DEPS_CMAKE_FLAGS="-D USE_BUNDLED=OFF -D USE_BUNDLED_TS_PARSERS=ON";
+
+          # unset lua-path here, to make sure the global env does not leak, and
+          # prevent unset later, s.t. the lua env imported by this flake
+          # exists.
+          LUA_PATH="";
+          LUA_CPATH="";
+          PREVENT_LUA_PATH_LEAK=false_bin;
+
+          # clear shellHook, it doesn't do anything we really need.
+          shellHook = "";
+        });
+
         test_nvim_master = nvim_master.outputs.devShells.${pkgs.system}.default.overrideAttrs(attrs: {
           TEST_09=false_bin;
+          TEST_012=false_bin;
           TEST_MASTER=true_bin;
 
           # same reasoning as in nvim_09
